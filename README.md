@@ -59,4 +59,4 @@ This needs to be automated so that the infrastructure can be discarded as soon a
 
 #### Load Balancer URL
 http://udagr-webap-x8thr9c7dvux-584243399.us-east-1.elb.amazonaws.com/
-(ACTIVE)# Udacity_Cloudformation
+(ACTIVE)
