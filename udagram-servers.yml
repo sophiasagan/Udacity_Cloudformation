@@ -168,11 +168,3 @@ Resources:
       Roles:
         - Ref: UdacityS3ReadOnlyEC2
 
-Outputs:
-    LoadBalancerPublicURL:
-        Description: Public IP of Load Balancer
-        Value: !Sub
-          - http://${Domain}
-          - { Domain: !GetAtt WebApplicationLoadBalancer.DNSName }
-        Export:
-          Name: !Sub ${EnvironmentName}-Public-IP
