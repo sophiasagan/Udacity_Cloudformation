@@ -1,12 +1,12 @@
-AWSTemplateFormatVersion: 2010-09-09
 Description: >
   Sophia Jung / Udacity Udagram project 
 
 Parameters:
 
     EnvironmentName:
-        Description:  Environment name prefixed to resources helping identification
+        Description:  Environment name 
         Type: String
+    
 
 Resources:
   WebServerSecurityGroup:
@@ -50,22 +50,24 @@ Resources:
     Properties:
       UserData:
         Fn::Base64: !Sub |
-          #!/bin/bash
+          #!/bin/bash 
           apt-get update -y
           apt-get install apache2 -y
           systemctl start apache2.service
           cd /var/www/html
-          aws s3 cp s3://udacity-demo-2/udacity.zip .
-          sudo unzip -o udacity.zip
-            
+          echo "Udacity Demo Web Server Up and Running!" > index.html
+
       ImageId: ami-04505e74c0741db8d
+      # KeyName: udagramwebapp
       SecurityGroups:
       - Ref: WebServerSecurityGroup
       InstanceType: t2.medium
       BlockDeviceMappings:
-      - DeviceName: "/dev/sdh"
+      - DeviceName: "/dev/sdk"
         Ebs:
           VolumeSize: '10'
+          DeleteOnTermination: true
+          VolumeType: "gp2"
 
   WebApplicationGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -75,8 +77,8 @@ Resources:
           !Sub "${EnvironmentName}-PRIV-NETS"
       LaunchConfigurationName:
         Ref: WebApplicationLaunchConfig
-      MinSize: '4'
-      MaxSize: '4'
+      MinSize: '4' 
+      MaxSize: '4' 
       TargetGroupARNs:
       - Ref: WebApplicationTargetGroup
 
@@ -141,32 +143,33 @@ Resources:
           - s3:Get*
           - s3:List*
           Resource: 
-          - arn:aws:s3:::udacity-demo-1
-          - arn:aws:s3:::udacity-demo-1/*
+          - arn:aws:s3:::udacity-demo-2
+          - arn:aws:s3:::udacity-demo-2/*
       Roles:
-      - Ref: UdacityS3ReadOnlyEC2
+      - Ref: IAMRoleEC2Access
 
-  UdacityS3ReadOnlyEC2:
-      Type: AWS::IAM::Role
+  IAMRoleEC2Access:
+      Type: "AWS::IAM::Role"
       Properties:
-          RoleName:
-            !Sub ${EnvironmentName}-Role
-          AssumeRolePolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-            - Effect: Allow
+        ManagedPolicyArns:
+          - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
               Principal:
                 Service:
-                - ec2.amazonaws.com
+                  - "ec2.amazonaws.com"
               Action:
-              - sts:AssumeRole
-          Path: "/"
+                - "sts:AssumeRole"
+        Path: "/"
 
   ProfileWithRolesForUdagram:
     Type: AWS::IAM::InstanceProfile
     Properties:
+      Path: "/"
       Roles:
-        - Ref: UdacityS3ReadOnlyEC2
+        - Ref: IAMRoleEC2Access
 
 Outputs:
     LoadBalancerPublicURL:
