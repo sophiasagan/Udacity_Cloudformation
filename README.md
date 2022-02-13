@@ -57,5 +57,4 @@ This needs to be automated so that the infrastructure can be discarded as soon a
 |---|---|
 |Output| Any values in the output section are a bonus
 
-http://udagr-webap-1ovvvzk45mgpy-1534623577.us-east-1.elb.amazonaws.com/
-(shows default apache page)
+http://udagr-webap-1v58c8s3300mq-1626748625.us-east-1.elb.amazonaws.com/(active)
